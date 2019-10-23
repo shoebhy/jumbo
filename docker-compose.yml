@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: "./DockerFiles/php/"
+    volumes:
+      - ./src/:/var/www/html/
+    container_name: php
+  mysql:
+    image: mysql
+    container_name: mysql-db
+    volumes:
+      - ./data/2019_10_22T235109_jumbo_project_tables.sql:/docker-entrypoint-initdb.d/2019_10_22T235109_jumbo_project_tables.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: jumbo
+      MYSQL_USER: shoeb
+      MYSQL_PASSWORD: pwdpwd
+    ports:
+      - "3306:3306"
+  apache:
+    container_name: php_web
+    build:
+      context: "./DockerFiles/apache/"
+    depends_on:
+      - mysql
+      - php
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/:/var/www/html/
+      
